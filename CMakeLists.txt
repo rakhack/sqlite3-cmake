@@ -1,5 +1,5 @@
 project(sqlite3)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
@@ -23,8 +23,10 @@ if(WIN32)
   )
   install(FILES sqlite3.exe DESTINATION bin)
 else()
-  include(FindThreads)
-  target_link_libraries(sqlite m ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+  set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+  set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+  find_package(Threads REQUIRED)
+  target_link_libraries(sqlite m Threads::Threads dl)
   install(TARGETS sqlite RUNTIME DESTINATION bin)
 endif()
 
