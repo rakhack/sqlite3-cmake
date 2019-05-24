@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.1)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 add_library(sqlite3 STATIC src/sqlite3.c src/sqlite3.h src/sqlite3ext.h)
-add_executable(sqlite src/sqlite3.c src/shell.c src/sqlite3.h src/sqlite3ext.h)
 
 add_definitions(-DSQLITE_ENABLE_RTREE)
 add_definitions(-DSQLITE_ENABLE_FTS4)
@@ -16,16 +15,8 @@ add_definitions(-DSQLITE_ENABLE_STAT4)
 # Uncomment this for single-threaded variant (faster)
 #add_definitions(-DSQLITE_THREADSAFE=0)
 
-if(WIN32)
-  add_custom_command(TARGET sqlite POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sqlite> ${CMAKE_BINARY_DIR}/sqlite3.exe
-    DEPENDS sqlite
-  )
-  install(FILES sqlite3.exe DESTINATION bin)
-else()
+if(NOT WIN32)
   target_link_libraries(sqlite3 pthread dl)
-  target_link_libraries(sqlite m pthread dl)
-  install(TARGETS sqlite RUNTIME DESTINATION bin)
 endif()
 
 install(FILES src/sqlite3.h src/sqlite3ext.h DESTINATION include)
